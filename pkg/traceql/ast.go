@@ -562,8 +562,8 @@ func (f *SpansetFilter) evaluate(input []*Spanset) ([]*Spanset, error) {
 	}
 
 	for i, ss := range input {
-		if ss == nil || len(ss.Spans) == 0 {
-			// This spanset is nil or empty so it's dropped.
+		if len(ss.Spans) == 0 {
+			// This spanset is empty so it's dropped.
 			fork(i)
 			continue
 		}

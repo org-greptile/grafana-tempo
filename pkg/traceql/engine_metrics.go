@@ -1225,11 +1225,10 @@ func (e *Engine) CompileMetricsQueryRange(req *tempopb.QueryRangeRequest, opts .
 		}
 
 		// Setup second pass callback.  It might be optimized away
+		ssBuf := make([]*Spanset, 1)
 		storageReq.SecondPass = func(s *Spanset) ([]*Spanset, error) {
-			if s == nil || len(s.Spans) == 0 {
-				return nil, nil
-			}
-			return pipeline.evaluate([]*Spanset{s})
+			ssBuf[0] = s
+			return pipeline.evaluate(ssBuf)
 		}
 
 		optimize(&storageReq)
