@@ -1,0 +1,14 @@
+FROM golang:alpine@sha256:2389ebfa5b7f43eeafbd6be0c3700cc46690ef842ad962f6c5bd6be49ed82039 AS build-dlv
+
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+
+FROM alpine:3.23@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659 as certs
+RUN apk --update add ca-certificates bash
+ARG TARGETARCH
+COPY bin/linux/tempo-${TARGETARCH} /tempo
+
+COPY --from=build-dlv /go/bin/dlv /dlv
+COPY /cmd/tempo/entrypoint-debug.sh /entrypoint-debug.sh
+EXPOSE 2345
+ENTRYPOINT [ "/entrypoint-debug.sh" ]
+CMD []
